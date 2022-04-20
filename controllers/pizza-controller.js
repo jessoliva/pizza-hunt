@@ -10,6 +10,14 @@ const pizzaController = {
    // get all pizzas
    getAllPizza(req, res) {
       Pizza.find({})
+      .populate({ // populate the comments array with the comments that are associated with each pizza
+         path: 'comments',
+         select: '-__v'
+         // Note that we also used the select option inside of populate(), so that we can tell Mongoose that we don't care about the __v field on comments either. The minus sign - in front of the field indicates that we don't want it to be returned. If we didn't have it, it would mean that it would return only the __v field
+      })
+      .select('-__v') // added to query to exclude the __v field from the response
+      .sort({ _id: -1 }) // sort the results in descending order by _id (newest first)
+      // This gets the newest pizza because a timestamp value is hidden somewhere inside the MongoDB ObjectId
       .then(dbPizzaData => res.json(dbPizzaData))
       .catch(err => {
          console.log(err);
@@ -21,8 +29,15 @@ const pizzaController = {
 
    // GET /api/pizzas/:id
    // get one pizza by id
-   getPizzaById({ params }, res) {
+   getPizzaById({ params }, res) { // destructuring params object { params} from body of request (req)
+
+      // doesnt need sort method added to query bc returning only 1 pizza
       Pizza.findOne({ _id: params.id })
+      .populate({
+         path: 'comments',
+         select: '-__v'
+      })
+      .select('-__v') 
       .then(dbPizzaData => {
          // If no pizza is found, send 404
          // If we can't find a pizza with that _id, we can check whether the returning value is empty and send a 404 status back to alert users that it doesn't exist
@@ -52,6 +67,7 @@ const pizzaController = {
    // PUT /api/pizzas/:id
    // update a pizza by id
    updatePizza({ params, body }, res) {
+      // With Mongoose, the "where" clause is used first, then the updated data, then options for how the data should be returned.
       Pizza.findOneAndUpdate({ _id: params.id }, body, { new: true })
       .then(dbPizzaData => {
          if (!dbPizzaData) {
@@ -77,6 +93,7 @@ const pizzaController = {
             return;
          }
          res.json(dbPizzaData);
+         // or can write res.json(true);
       })
       .catch(err => res.status(400).json(err));
    }
