@@ -9,10 +9,15 @@ const dateFormat = require('../utils/dateFormat');
 const PizzaSchema = new Schema(
    {
       pizzaName: {
-         type: String
+         type: String,
+         required: true,
+         trim: true
       },
       createdBy: {
-         type: String
+         type: String,
+         required: true, // requires data to exist for that field
+         trim: true 
+         // works just like the JavaScript .trim() method and removes white space before and after the input string
       },
       createdAt: {
          type: Date,
