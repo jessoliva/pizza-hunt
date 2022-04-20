@@ -30,7 +30,11 @@ const PizzaSchema = new Schema(
       },
       size: {
          type: String,
+         required: true,
+         enum: ['Personal', 'Small', 'Medium', 'Large', 'Extra Large'],
          default: 'Large'
+         // the enum option stands for enumerable, a popular term in web development that refers to a set of data that can be iterated over—much like using the for...in loop to iterate through an object
+         // With this validation option in place, we provide an array of options that this size field will accept. If a user attempts to enter a pizza size not listed—for example, a size value of "Super Mega Large"—the validation simply won't allow it
       },
       toppings: [],
       // associate the pizza and comments models
