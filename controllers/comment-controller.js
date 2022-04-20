@@ -36,6 +36,37 @@ const commentController = {
       .catch(err => res.json(err));  
    },
 
+   // With new replies, we aren't actually creating a reply document; we're just updating an existing comment
+   addReply({ params, body }, res) {
+      Comment.findOneAndUpdate(
+         { _id: params.commentId },
+         { $push: { replies: body } }, //$push allows for duplicates, $addToSet doesn't
+         { new: true }
+      )
+      .then(dbPizzaData => {
+         if (!dbPizzaData) {
+            res.status(404).json({ message: 'No comment found with this id!' });
+            return;
+         }
+         // mongoose will return the updated comment
+         res.json(dbPizzaData);
+      })
+      .catch(err => res.json(err));
+   },
+   // As we did with addComment() and removeComment(), we're passing params here as a parameter, so we'll need to make sure we pass it to addReply() when we implement it later in the route
+
+   // remove reply
+   removeReply({ params }, res) {
+      Comment.findOneAndUpdate(
+      { _id: params.commentId },
+      { $pull: { replies: { replyId: params.replyId } } },
+      { new: true }
+      )
+      .then(dbPizzaData => res.json(dbPizzaData))
+      .catch(err => res.json(err));
+   },
+   // Here, we're using the MongoDB $pull operator to remove the specific reply from the replies array where the replyId matches the value of params.replyId passed in from the route.
+
    // remove comment
    removeComment({ params }, res) {
 

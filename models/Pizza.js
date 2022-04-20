@@ -53,9 +53,14 @@ const PizzaSchema = new Schema(
 // a virtual is a property that is not stored in MongoDB. Virtuals are typically used for computed properties on documents
 // Virtual properties work just like regular functions
 // get total count of comments and replies on retrieval
+// PizzaSchema.virtual('commentCount').get(function() {
+//    return this.comments.length;
+// });
+// new one to get the total count of replies and comments
 PizzaSchema.virtual('commentCount').get(function() {
-   return this.comments.length;
+   return this.comments.reduce((total, comment) => total + comment.replies.length + 1, 0);
 });
+// Here we're using the .reduce() method to tally up the total of every comment with its replies. In its basic form, .reduce() takes two parameters, an accumulator and a currentValue. Here, the accumulator is total, and the currentValue is comment. As .reduce() walks through the array, it passes the accumulating total and the current value of comment into the function, with the return of the function revising the total for the next iteration through the array.
 
 // create the Pizza model using the PizzaSchema
 const Pizza = model('Pizza', PizzaSchema);
