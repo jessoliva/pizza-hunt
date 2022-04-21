@@ -7,7 +7,7 @@ const ReplySchema = new Schema(
     {
         // set custom id to avoid confusion with parent comment _id
         // able to do this because we imported the Types module from mongoose
-        replyId: {
+        replyId: { // don't really need this bc the _id is unique
             type: Schema.Types.ObjectId,
             default: () => new Types.ObjectId()
         },
@@ -31,7 +31,8 @@ const ReplySchema = new Schema(
     { 
         toJSON: {
           getters: true
-        }
+        },
+        id: false // removes the additional id display
     }
 );
 

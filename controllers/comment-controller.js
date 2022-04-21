@@ -40,7 +40,7 @@ const commentController = {
    addReply({ params, body }, res) {
       Comment.findOneAndUpdate(
          { _id: params.commentId },
-         { $push: { replies: body } }, //$push allows for duplicates, $addToSet doesn't
+         { $push: { replies: body } }, // $push allows for duplicates, $addToSet doesn't
          { new: true, runValidators: true }
       )
       .then(dbPizzaData => {
